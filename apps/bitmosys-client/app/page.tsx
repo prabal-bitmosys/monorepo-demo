@@ -1,25 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { DocumentRegular, Dismiss24Regular } from "@fluentui/react-icons";
 import {
   Button,
-  FluentProvider,
-  OverlayDrawer,
-  webLightTheme,
-} from "@fluentui/react-components";
-import {
-  FolderRegular,
-  EditRegular,
-  OpenRegular,
-  DocumentRegular,
-  PeopleRegular,
-  DocumentPdfRegular,
-  VideoRegular,
-  Dismiss24Regular,
-} from "@fluentui/react-icons";
-import {
-  PresenceBadgeStatus,
-  Avatar,
   DataGrid,
   DataGridBody,
   DataGridCell,
@@ -29,6 +13,7 @@ import {
   TableCellLayout,
   TableColumnDefinition,
   createTableColumn,
+  OverlayDrawer,
   Drawer,
   DrawerProps,
   DrawerHeader,
@@ -57,7 +42,6 @@ type phoneCell = {
 
 type firstNameCell = {
   label: string;
-  status: PresenceBadgeStatus;
 };
 
 type lastNameCell = {
@@ -90,7 +74,7 @@ type Item = {
 const items: Item[] = [
   {
     file: { label: "Meeting notes", icon: <DocumentRegular /> },
-    firstName: { label: "Max", status: "available" },
+    firstName: { label: "Max" },
     lastName: { label: "Doe" },
     email: { label: "test@mail.com" },
     phone: {
@@ -102,7 +86,7 @@ const items: Item[] = [
   },
   {
     file: { label: "Thursday presentation", icon: <DocumentRegular /> },
-    firstName: { label: "Erika", status: "busy" },
+    firstName: { label: "Erika" },
     lastName: { label: "Doe" },
     email: { label: "test@mail.com" },
     phone: {
@@ -117,7 +101,7 @@ const items: Item[] = [
   },
   {
     file: { label: "Training recording", icon: <DocumentRegular /> },
-    firstName: { label: "John", status: "away" },
+    firstName: { label: "John" },
     lastName: { label: "Doe" },
     email: { label: "test@mail.com" },
     phone: {
@@ -129,7 +113,7 @@ const items: Item[] = [
   },
   {
     file: { label: "Purchase order", icon: <DocumentRegular /> },
-    firstName: { label: "Jane", status: "offline" },
+    firstName: { label: "Jane" },
     lastName: { label: "Doe" },
     email: { label: "test@mail.com" },
     phone: {
@@ -296,77 +280,75 @@ const Home = () => {
             </DrawerBody>
           </Drawer>
           {/* End of Sidebar nav panel */}
-          <FluentProvider theme={webLightTheme}>
-            <DataGrid
-              items={items}
-              columns={columns}
-              sortable
-              getRowId={(item) => item.file.label}
-              selectionMode="multiselect"
-              resizableColumns
-              columnSizingOptions={columnSizingOptions}
-            >
-              <DataGridHeader>
-                <DataGridRow
+          <DataGrid
+            items={items}
+            columns={columns}
+            sortable
+            getRowId={(item) => item.file.label}
+            selectionMode="multiselect"
+            resizableColumns
+            columnSizingOptions={columnSizingOptions}
+          >
+            <DataGridHeader>
+              <DataGridRow
+                selectionCell={{
+                  checkboxIndicator: { "aria-label": "Select all rows" },
+                }}
+              >
+                {({ renderHeaderCell, columnId }, dataGrid) =>
+                  dataGrid.resizableColumns ? (
+                    <Menu openOnContext>
+                      <MenuTrigger>
+                        <DataGridHeaderCell
+                          ref={(el) => {
+                            refMap.current[columnId] = el;
+                          }}
+                        >
+                          {renderHeaderCell()}
+                        </DataGridHeaderCell>
+                      </MenuTrigger>
+                      <MenuPopover>
+                        <MenuList>
+                          <MenuItem
+                            onClick={dataGrid.columnSizing_unstable.enableKeyboardMode(
+                              columnId
+                            )}
+                          >
+                            Keyboard Column Resizing
+                          </MenuItem>
+                        </MenuList>
+                      </MenuPopover>
+                    </Menu>
+                  ) : (
+                    <DataGridHeaderCell>
+                      {renderHeaderCell()}
+                    </DataGridHeaderCell>
+                  )
+                }
+              </DataGridRow>
+            </DataGridHeader>
+            <DataGridBody<Item>>
+              {({ item, rowId }) => (
+                <DataGridRow<Item>
+                  key={rowId}
                   selectionCell={{
-                    checkboxIndicator: { "aria-label": "Select all rows" },
+                    checkboxIndicator: { "aria-label": "Select row" },
                   }}
                 >
-                  {({ renderHeaderCell, columnId }, dataGrid) =>
-                    dataGrid.resizableColumns ? (
-                      <Menu openOnContext>
-                        <MenuTrigger>
-                          <DataGridHeaderCell
-                            ref={(el) => {
-                              refMap.current[columnId] = el;
-                            }}
-                          >
-                            {renderHeaderCell()}
-                          </DataGridHeaderCell>
-                        </MenuTrigger>
-                        <MenuPopover>
-                          <MenuList>
-                            <MenuItem
-                              onClick={dataGrid.columnSizing_unstable.enableKeyboardMode(
-                                columnId
-                              )}
-                            >
-                              Keyboard Column Resizing
-                            </MenuItem>
-                          </MenuList>
-                        </MenuPopover>
-                      </Menu>
-                    ) : (
-                      <DataGridHeaderCell>
-                        {renderHeaderCell()}
-                      </DataGridHeaderCell>
-                    )
-                  }
+                  {({ renderCell }) => (
+                    <DataGridCell
+                      onClick={() => {
+                        setIsOpen(!isOpen);
+                        console.log("CLICKED!!!!!");
+                      }}
+                    >
+                      {renderCell(item)}
+                    </DataGridCell>
+                  )}
                 </DataGridRow>
-              </DataGridHeader>
-              <DataGridBody<Item>>
-                {({ item, rowId }) => (
-                  <DataGridRow<Item>
-                    key={rowId}
-                    selectionCell={{
-                      checkboxIndicator: { "aria-label": "Select row" },
-                    }}
-                  >
-                    {({ renderCell }) => (
-                      <DataGridCell
-                        onClick={() => {
-                          setIsOpen(!isOpen);
-                          console.log("CLICKED!!!!!");
-                        }}
-                      >
-                        {renderCell(item)}
-                      </DataGridCell>
-                    )}
-                  </DataGridRow>
-                )}
-              </DataGridBody>
-            </DataGrid>
-          </FluentProvider>
+              )}
+            </DataGridBody>
+          </DataGrid>
         </div>
       )}
     </>
