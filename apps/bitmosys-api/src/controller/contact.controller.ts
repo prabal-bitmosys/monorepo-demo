@@ -25,7 +25,7 @@ export class ContactController {
     // Retrieve AWS configuration values using ConfigService
     const awsAccessKey = this.configService.get<string>('AWS_ACCESS');
     const awsSecretKey = this.configService.get<string>('AWS_SECRET');
-
+    const bucket = this.configService.get<string>('BUCKET');
     // Upload file to S3
     const s3 = new S3({
       accessKeyId: awsAccessKey,
@@ -33,7 +33,7 @@ export class ContactController {
     });
     
     const s3Params = {
-      Bucket: 'bitmosys-demo',
+      Bucket: bucket,
       Key: `${file.originalname}`,
       Body: file.buffer
     };
