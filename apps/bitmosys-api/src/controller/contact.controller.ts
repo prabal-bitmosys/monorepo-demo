@@ -4,10 +4,14 @@ import { ContactService } from '../service/contact.service';
 import { Contact } from '../contact.entity';
 import { Express } from 'express';
 import { S3 } from 'aws-sdk';
+import { ConfigService } from '@nestjs/config'; // Only import ConfigService
 
 @Controller('api/contact')
 export class ContactController {
-  constructor(private readonly contactService: ContactService) {}
+  constructor(
+    private readonly contactService: ContactService,
+    private readonly configService: ConfigService, // Inject ConfigService
+  ) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
@@ -18,10 +22,14 @@ export class ContactController {
 
     const completeContact: Contact = { ...contactData } as Contact;
 
+    // Retrieve AWS configuration values using ConfigService
+    const awsAccessKey = this.configService.get<string>('AWS_ACCESS');
+    const awsSecretKey = this.configService.get<string>('AWS_SECRET');
+
     // Upload file to S3
     const s3 = new S3({
-      accessKeyId: 'AKIAW3MD6RKZHLWJ4TNK',
-      secretAccessKey: '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',
+      accessKeyId: awsAccessKey,
+      secretAccessKey: awsSecretKey,
     });
     
     const s3Params = {
