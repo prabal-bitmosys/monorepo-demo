@@ -25,5 +25,7 @@ export class Contact {
 
   @Column({ nullable: false })
   terms: boolean;
-
+  
+  @Column({ nullable: true })
+  file: string;
 }
