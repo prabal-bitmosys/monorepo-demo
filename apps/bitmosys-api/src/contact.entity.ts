@@ -11,19 +11,7 @@ export class Contact {
   @Column({ nullable: false })
   lastName: string;
 
-  @Column({ nullable: false })
-  email: string;
-
-  @Column({ nullable: false })
-  phone: string;
-
-  @Column({ nullable: false })
-  subject: string;
-
-  @Column({ nullable: false })
-  message: string;
-
-  @Column({ nullable: false })
-  terms: boolean;
+  @Column({ nullable: true })
+  file: string; 
 
 }
