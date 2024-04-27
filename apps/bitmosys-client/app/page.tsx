@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   DocumentRegular,
   CopyRegular,
@@ -40,110 +40,51 @@ import {
   ToastBody,
 } from "@fluentui/react-components";
 
-type FileCell = {
-  label: string;
-  icon: JSX.Element;
-};
+// type FileCell = {
+//   label: string;
+//   icon: JSX.Element;
+// };
 
-type emailCell = {
-  label: string;
-  icon?: JSX.Element;
-  button?: JSX.Element;
-};
+// type emailCell = {
+//   label: string;
+//   icon?: JSX.Element;
+//   button?: JSX.Element;
+// };
 
-type phoneCell = {
-  label: string;
-  icon?: JSX.Element;
-};
+// type phoneCell = {
+//   label: string;
+// };
 
-type firstNameCell = {
-  label: string;
-};
+// type firstNameCell = {
+//   label: string;
+// };
 
-type lastNameCell = {
-  label: string;
-};
+// type lastNameCell = {
+//   label: string;
+// };
 
-type subjectCell = {
-  label: string;
-};
+// type subjectCell = {
+//   label: string;
+// };
 
-type messageCell = {
-  label: string;
-};
+// type messageCell = {
+//   label: string;
+// };
 
-type termsCell = {
-  label: string;
-};
+// type termsCell = {
+//   label: string;
+// };
 
 type Item = {
-  firstName: firstNameCell;
-  lastName: lastNameCell;
-  email: emailCell;
-  phone?: phoneCell;
-  subject: subjectCell;
-  message: messageCell;
-  terms: termsCell;
-  file?: FileCell;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+  terms: boolean;
+  file?: string;
 };
-
-const items: Item[] = [
-  {
-    file: { label: "Meeting notes", icon: <DocumentRegular /> },
-    firstName: { label: "Max" },
-    lastName: { label: "Doe" },
-    email: {
-      label: "test@mail.com",
-      icon: <CopyRegular />,
-      button: <Button>Copy</Button>,
-    },
-    phone: {
-      label: "1234567890",
-    },
-    subject: { label: "TEST" },
-    message: { label: "TEST" },
-    terms: { label: "true" },
-  },
-  {
-    file: { label: "Thursday presentation", icon: <DocumentRegular /> },
-    firstName: { label: "Erika" },
-    lastName: { label: "Doe" },
-    email: { label: "test2@mail.com", icon: <CopyRegular /> },
-    phone: {
-      label: "1234567890",
-    },
-    subject: { label: "TEST" },
-    message: {
-      label:
-        "sadfadsgasdgas dfgasdfgasdgfalkdsfjj l al;sdj fl;ajsl;djf ;laksdjf alskdjfla;skdj fl;ajskdfl;",
-    },
-    terms: { label: "true" },
-  },
-  {
-    file: { label: "Training recording", icon: <DocumentRegular /> },
-    firstName: { label: "John" },
-    lastName: { label: "Doe" },
-    email: { label: "test3@mail.com", icon: <CopyRegular /> },
-    phone: {
-      label: "1234567890",
-    },
-    subject: { label: "TEST" },
-    message: { label: "TEST" },
-    terms: { label: "true" },
-  },
-  {
-    file: { label: "Purchase order", icon: <DocumentRegular /> },
-    firstName: { label: "Jane" },
-    lastName: { label: "Doe" },
-    email: { label: "test4@mail.com", icon: <CopyRegular /> },
-    phone: {
-      label: "1234567890",
-    },
-    subject: { label: "TEST" },
-    message: { label: "TEST" },
-    terms: { label: "true" },
-  },
-];
 
 const columnSizingOptions = {
   file: {
@@ -191,9 +132,29 @@ const columnSizingOptions = {
 const Home = () => {
   const toasterId = useId("toaster");
   const { dispatchToast } = useToastController(toasterId);
-  const [domLoaded, setDomLoaded] = React.useState(false);
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [selectedItem, setSelectedItem] = React.useState<Item | null>(null);
+  const [domLoaded, setDomLoaded] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+
+  const [item, setItem] = useState<Item[]>([]);
+
+  const fetchUrl = process.env.NEXT_PUBLIC_URL;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${fetchUrl}`);
+        if (!response.ok) {
+          throw new Error(`ERROR! Status: ${response.status}`);
+        }
+        const jsonData = await response.json();
+        setItem(jsonData);
+      } catch (error) {
+        console.error("Error fetchting data: ", error);
+      }
+    };
+    fetchData();
+  }, [fetchUrl]);
 
   const notify = () =>
     dispatchToast(
@@ -214,49 +175,61 @@ const Home = () => {
       { intent: "success" }
     );
 
-  React.useEffect(() => {
+  useEffect(() => {
     setDomLoaded(true);
   }, []);
 
   const columns: TableColumnDefinition<Item>[] = [
     createTableColumn<Item>({
       columnId: "firstName",
-      compare: (a, b) => a.firstName.label.localeCompare(b.firstName.label),
+      compare: (a, b) => a.firstName.localeCompare(b.firstName),
       renderHeaderCell: () => "First Name",
       renderCell: (item) => (
-        <TableCellLayout truncate>{item.firstName.label}</TableCellLayout>
+        <TableCellLayout truncate>{item.firstName}</TableCellLayout>
       ),
     }),
     createTableColumn<Item>({
       columnId: "lastName",
-      compare: (a, b) => a.lastName.label.localeCompare(b.lastName.label),
+      compare: (a, b) => a.lastName.localeCompare(b.lastName),
       renderHeaderCell: () => "Last Name",
       renderCell: (item) => (
-        <TableCellLayout truncate>{item.lastName.label}</TableCellLayout>
+        <TableCellLayout truncate>{item.lastName}</TableCellLayout>
       ),
     }),
     createTableColumn<Item>({
       columnId: "email",
-      compare: (a, b) => a.email.label.localeCompare(b.email.label),
+      compare: (a, b) => a.email.localeCompare(b.email),
       renderHeaderCell: () => "Email",
       renderCell: (item) => {
         const copyToClipboard = () => {
-          navigator.clipboard.writeText(item.email.label);
+          navigator.clipboard.writeText(item.email);
           notify();
           console.log("Email copied to clipboard!");
         };
 
         return (
           <TableCellLayout truncate>
-            {item.email.label}
-            <Button
-              appearance="transparent"
-              icon={<CopyRegular />}
-              onClick={() => {
-                copyToClipboard();
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                maxWidth: "100%",
               }}
-              style={{ marginLeft: "8px" }}
-            />
+            >
+              <span
+                style={{
+                  overflow: "hidden",
+                }}
+              >
+                {item.email}
+              </span>
+              <Button
+                appearance="transparent"
+                icon={<CopyRegular />}
+                onClick={copyToClipboard}
+              />
+            </div>
           </TableCellLayout>
         );
       },
@@ -264,53 +237,53 @@ const Home = () => {
     createTableColumn<Item>({
       columnId: "phone",
       compare: (a, b) => {
-        const phoneA = a.phone?.label || "";
-        const phoneB = b.phone?.label || "";
+        const phoneA = a.phone || "";
+        const phoneB = b.phone || "";
         return phoneA.localeCompare(phoneB);
       },
       renderHeaderCell: () => "Phone",
       renderCell: (item) => (
-        <TableCellLayout truncate media={item.phone?.icon}>
-          {item.phone?.label ?? "Not Specified"}
+        <TableCellLayout truncate>
+          {item.phone ?? "Not Specified"}
         </TableCellLayout>
       ),
     }),
     createTableColumn<Item>({
       columnId: "subject",
-      compare: (a, b) => a.subject.label.localeCompare(b.subject.label),
+      compare: (a, b) => a.subject.localeCompare(b.subject),
       renderHeaderCell: () => "Subject",
       renderCell: (item) => (
-        <TableCellLayout truncate>{item.subject.label}</TableCellLayout>
+        <TableCellLayout truncate>{item.subject}</TableCellLayout>
       ),
     }),
     createTableColumn<Item>({
       columnId: "message",
-      compare: (a, b) => a.message.label.localeCompare(b.message.label),
+      compare: (a, b) => a.message.localeCompare(b.message),
       renderHeaderCell: () => "Message",
       renderCell: (item) => (
-        <TableCellLayout truncate>{item.message.label}</TableCellLayout>
+        <TableCellLayout truncate>{item.message}</TableCellLayout>
       ),
     }),
     createTableColumn<Item>({
       columnId: "terms",
-      compare: (a, b) => a.terms.label.localeCompare(b.terms.label),
+      // compare: (a, b) => a.terms.localeCompare(b.terms),
       renderHeaderCell: () => "Terms",
       renderCell: (item) => (
-        <TableCellLayout truncate>{item.terms.label}</TableCellLayout>
+        <TableCellLayout truncate>{item.terms}</TableCellLayout>
       ),
     }),
     createTableColumn<Item>({
       columnId: "file",
       compare: (a, b) => {
         // Handle potential undefined 'file' properties
-        const fileA = a.file?.label || "";
-        const fileB = b.file?.label || "";
+        const fileA = a.file || "";
+        const fileB = b.file || "";
         return fileA.localeCompare(fileB);
       },
       renderHeaderCell: () => "File",
       renderCell: (item) => (
-        <TableCellLayout truncate media={item.file?.icon}>
-          {item.file?.label ?? "Not Specified"}
+        <TableCellLayout truncate>
+          {item.file ?? "Not Specified"}
         </TableCellLayout>
       ),
     }),
@@ -336,17 +309,17 @@ const Home = () => {
     }),
   ];
 
-  const refMap = React.useRef<Record<string, HTMLElement | null>>({});
+  const refMap = useRef<Record<string, HTMLElement | null>>({});
 
   return (
     <>
       {domLoaded && (
         <div style={{ overflowX: "auto" }}>
           <DataGrid
-            items={items}
+            items={item}
             columns={columns}
             sortable
-            getRowId={(item) => item.file.label}
+            getRowId={(item) => item.file?.label}
             selectionMode="multiselect"
             resizableColumns
             columnSizingOptions={columnSizingOptions}
@@ -431,30 +404,41 @@ const Home = () => {
             {selectedItem ? (
               <>
                 <p>
-                  <strong>First Name:</strong> {selectedItem.firstName.label}
+                  <strong>First Name:</strong> {selectedItem.firstName}
                 </p>
                 <p>
-                  <strong>Last Name:</strong> {selectedItem.lastName.label}
+                  <strong>Last Name:</strong> {selectedItem.lastName}
                 </p>
                 <p>
-                  <strong>Email:</strong> {selectedItem.email.label}
+                  <strong>Email:</strong>{" "}
+                  <span>
+                    {selectedItem.email}
+                    <Button
+                      appearance="transparent"
+                      icon={<CopyRegular />}
+                      onClick={() => {
+                        navigator.clipboard.writeText(selectedItem.email);
+                        notify(); // Notify the user of the successful copy
+                      }}
+                      style={{ marginLeft: "8px" }}
+                    />
+                  </span>
                 </p>
                 <p>
                   <strong>Phone:</strong>{" "}
-                  {selectedItem.phone?.label ?? "Not Specified"}
+                  {selectedItem.phone ?? "Not Specified"}
                 </p>
                 <p>
-                  <strong>Subject:</strong> {selectedItem.subject.label}
+                  <strong>Subject:</strong> {selectedItem.subject}
                 </p>
                 <p>
-                  <strong>Message:</strong> {selectedItem.message.label}
+                  <strong>Message:</strong> {selectedItem.message}
                 </p>
                 <p>
-                  <strong>Terms:</strong> {selectedItem.terms.label}
+                  <strong>Terms:</strong> {selectedItem.terms}
                 </p>
                 <p>
-                  <strong>File:</strong>{" "}
-                  {selectedItem.file?.label ?? "Not Specified"}
+                  <strong>File:</strong> {selectedItem.file ?? "Not Specified"}
                 </p>
               </>
             ) : (
@@ -462,10 +446,6 @@ const Home = () => {
             )}
           </DrawerBody>
         </OverlayDrawer>
-
-        {/* <Button appearance="primary" onClick={() => setIsOpen(true)}>
-          Open Drawer
-        </Button> */}
       </div>
       <Toaster position="top" key={toasterId} toasterId={toasterId} />
     </>

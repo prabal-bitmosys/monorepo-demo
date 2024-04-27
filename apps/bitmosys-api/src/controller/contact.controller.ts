@@ -1,4 +1,11 @@
-import { Controller, Post, Body, Get, UseInterceptors, UploadedFile } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ContactService } from '../service/contact.service';
 import { Contact } from '../contact.entity';
@@ -15,7 +22,10 @@ export class ContactController {
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  async createContact(@Body() contactData: Partial<Contact>, @UploadedFile() file: Express.Multer.File): Promise<Contact> {
+  async createContact(
+    @Body() contactData: Partial<Contact>,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<Contact> {
     if (!file) {
       throw new Error('No file uploaded.');
     }
@@ -31,11 +41,11 @@ export class ContactController {
       accessKeyId: awsAccessKey,
       secretAccessKey: awsSecretKey,
     });
-    
+
     const s3Params = {
       Bucket: bucket,
       Key: `${file.originalname}`,
-      Body: file.buffer
+      Body: file.buffer,
     };
 
     const s3Response = await s3.upload(s3Params).promise();
