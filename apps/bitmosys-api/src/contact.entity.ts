@@ -11,19 +11,19 @@ export class Contact {
   @Column({ nullable: false })
   lastName: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   email: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   phone: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   subject: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   message: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   terms: boolean;
   
   @Column({ nullable: true })
