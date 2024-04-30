@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Get,
-  UseInterceptors,
-  UploadedFile,
-} from '@nestjs/common';
+import { Controller, Post, Body, Get, UseInterceptors, UploadedFile, Param, NotFoundException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ContactService } from '../service/contact.service';
 import { Contact } from '../contact.entity';
@@ -59,5 +52,19 @@ export class ContactController {
   @Get()
   async findAllContacts(): Promise<Contact[]> {
     return this.contactService.findAll();
+  }
+
+  @Get(':id')
+  async findContactById(@Param('id') id: string): Promise<Contact> {
+    const contactId = parseInt(id, 10);
+    try {
+      const contact = await this.contactService.findById(contactId);
+      if (!contact) {
+        throw new NotFoundException('Contact not found');
+      }
+      return contact;
+    } catch (error) {
+      throw error;
+    }
   }
 }
