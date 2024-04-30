@@ -138,7 +138,7 @@ const Home = () => {
 
   const [item, setItem] = useState<Item[]>([]);
 
-  const fetchUrl = process.env.NEXT_PUBLIC_URL;
+  const fetchUrl = 'http://localhost:4000/api/contact';
 
   useEffect(() => {
     const fetchData = async () => {
