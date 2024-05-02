@@ -1,16 +1,16 @@
 import { Controller, Post, Body, Get, UseInterceptors, UploadedFile, Param, NotFoundException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ContactService } from '../service/contact.service';
-import { Contact } from '../contact.entity';
+import { Contact } from '@monorepo-demo/database';
 import { Express } from 'express';
 import { S3 } from 'aws-sdk';
-import { ConfigService } from '@nestjs/config'; // Only import ConfigService
+import { ConfigService } from '@nestjs/config'; 
 
 @Controller('api/contact')
 export class ContactController {
   constructor(
     private readonly contactService: ContactService,
-    private readonly configService: ConfigService, // Inject ConfigService
+    private readonly configService: ConfigService, 
   ) {}
 
   @Post()

@@ -1,0 +1,10 @@
+version: '3'
+services:
+  bitmosys-api:
+    build: ./apps/bitmosys-api
+    ports:
+      - "4000:4000"
+  bitmosys-client:
+    build: ./apps/bitmosys-client
+    ports:
+      - "3000:3000"

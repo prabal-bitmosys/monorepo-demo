@@ -1,0 +1,13 @@
+{ 
+  "name": "@monorepo-demo/database",
+  "version": "1.0.0",
+  "description": "Internal database package containing entities.",
+  "main": "contact.entity.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "pg": "^8.11.5",
+    "typeorm": "^0.3.20"
+  }
+}

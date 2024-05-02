@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { Contact } from './contact.entity'; // Import your entity
+import { Contact } from './contact.entity'; 
 import { ContactController } from './controller/contact.controller';
 import { ContactService } from './service/contact.service';
 
